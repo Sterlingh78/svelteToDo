@@ -1,26 +1,5 @@
 <script>
-	$: todos = [
-		{
-			id: 0,
-			name: 'Todo 1',
-			done: false
-		},
-		{
-			id: 1,
-			name: 'Todo 2',
-			done: false
-		},
-		{
-			id: 2,
-			name: 'Todo 3',
-			done: false
-		},
-		{
-			id: 3,
-			name: 'Todo 4',
-			done: false
-		}
-	];
+	$: todos = [];
 	$: selectedId = '';
 	$: editMode = false;
 
@@ -29,15 +8,17 @@
 	};
 
 	const addToDo = () => {
-		todos = [
-			...todos,
-			{
-				id: todos.length,
-				name: elems.addInput.value,
-				done: false
-			}
-		];
-		elems.addInput.value = '';
+		if (elems.addInput.value !== '') {
+			todos = [
+				...todos,
+				{
+					id: todos.length,
+					name: elems.addInput.value,
+					done: false
+				}
+			];
+			elems.addInput.value = '';
+		}
 	};
 	const swapUI = (id) => {
 		elems.addInput.value = todos[id].name;
@@ -74,7 +55,9 @@
 		});
 		console.log(todos);
 	};
-	const clearDone = () => {};
+	const clearDone = () => {
+		todos = todos.filter((todo) => !todo.done);
+	};
 </script>
 
 <main>
@@ -99,9 +82,14 @@
 			</div>
 			{#each todos as todo}
 				{#if todo.done}
-					<div class="card bg-green-500 p-4 w-full flex-row">
+					<div class="card bg-base-300 p-4 w-full flex-row">
 						<label class="label cursor-pointer mr-6">
-							<input on:click={() => markDone(todo.id)} type="checkbox" class="checkbox" />
+							<input
+								on:click={() => markDone(todo.id)}
+								type="checkbox"
+								checked="checked"
+								class="checkbox"
+							/>
 						</label>
 						<p class="m-auto pr-10">{todo.name}</p>
 						<button on:click={() => swapUI(todo.id)} class="btn btn-primary ml-6">Edit</button>
@@ -120,7 +108,7 @@
 					</div>
 				{/if}
 			{/each}
-			<button class="btn btn-primary">Clear Done</button>
+			<button on:click={clearDone} class="btn btn-primary">Clear Done</button>
 		</div>
 	</div>
 </main>
